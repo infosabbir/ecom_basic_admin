@@ -5,6 +5,7 @@ import 'package:ecom_basic_admin/providers/product_provider.dart';
 import 'package:ecom_basic_admin/providers/user_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:provider/provider.dart';
 
 import 'pages/add_product_page.dart';
@@ -47,6 +48,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
+      builder: EasyLoading.init(),
       theme: ThemeData(
         scaffoldBackgroundColor: Colors.grey[200],
         appBarTheme: AppBarTheme(

@@ -1,8 +1,7 @@
-import 'dart:io';
-
+import 'package:ecom_basic_admin/auth/auth_service.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+
 import '../customwidgets/dashboard_item_view.dart';
 import '../models/dashboard_model.dart';
 import 'add_product_page.dart';
@@ -45,7 +44,12 @@ class _DashboardPageState extends State<DashboardPage> {
         title: const Text('Dashboard'),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              AuthService.logOut().then(
+                (value) => Navigator.pushReplacementNamed(
+                    context, LauncherPage.routeName),
+              );
+            },
             icon: const Icon(Icons.logout),
           ),
         ],

@@ -1,7 +1,8 @@
+import 'package:ecom_basic_admin/auth/auth_service.dart';
+import 'package:ecom_basic_admin/pages/launcher_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-
 
 class LoginPage extends StatefulWidget {
   static const String routeName = '/login';
@@ -18,10 +19,11 @@ class _LoginPageState extends State<LoginPage> {
   String _errMsg = '';
   @override
   void initState() {
-    _emailController.text = 'admin08@gmail.com';
+    _emailController.text = 'admin@gmail.com';
     _passwordController.text = '123456';
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,12 +40,11 @@ class _LoginPageState extends State<LoginPage> {
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
                   decoration: const InputDecoration(
-                    filled: true,
-                    prefixIcon: Icon(Icons.email),
-                    labelText: 'Email Address'
-                  ),
+                      filled: true,
+                      prefixIcon: Icon(Icons.email),
+                      labelText: 'Email Address'),
                   validator: (value) {
-                    if(value == null || value.isEmpty) {
+                    if (value == null || value.isEmpty) {
                       return 'Provide a valid email address';
                     }
                     return null;
@@ -56,12 +57,11 @@ class _LoginPageState extends State<LoginPage> {
                   controller: _passwordController,
                   obscureText: true,
                   decoration: const InputDecoration(
-                    filled: true,
-                    prefixIcon: Icon(Icons.lock),
-                    labelText: 'Password(at least 6 characters)'
-                  ),
+                      filled: true,
+                      prefixIcon: Icon(Icons.lock),
+                      labelText: 'Password(at least 6 characters)'),
                   validator: (value) {
-                    if(value == null || value.isEmpty) {
+                    if (value == null || value.isEmpty) {
                       return 'Provide a valid password';
                     }
                     return null;
@@ -74,18 +74,22 @@ class _LoginPageState extends State<LoginPage> {
               ),
               Row(
                 children: [
-                  const Text('Forgot password', style: TextStyle(fontSize: 18, color: Colors.red),),
+                  const Text(
+                    'Forgot password',
+                    style: TextStyle(fontSize: 18, color: Colors.red),
+                  ),
                   TextButton(
-                    onPressed: () {
-
-                    },
+                    onPressed: () {},
                     child: const Text('Click Here'),
                   ),
                 ],
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text(_errMsg, style: const TextStyle(fontSize: 18, color: Colors.red),),
+                child: Text(
+                  _errMsg,
+                  style: const TextStyle(fontSize: 18, color: Colors.red),
+                ),
               ),
             ],
           ),
@@ -102,9 +106,22 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _authenticate() async {
-    if(_formKey.currentState!.validate()) {
+    if (_formKey.currentState!.validate()) {
+      EasyLoading.show(status: 'Please wait', dismissOnTap: false);
+      // calling login admin method..
+      final email = _emailController.text;
+      final password = _passwordController.text;
 
-
+      try {
+        final user = await AuthService.loginAdmin(email, password);
+        Navigator.pushReplacementNamed(context, LauncherPage.routeName);
+        EasyLoading.dismiss();
+      } on FirebaseAuthException catch (error) {
+        EasyLoading.dismiss();
+        setState(() {
+          _errMsg = error.message!;
+        });
+      }
     }
   }
 }
