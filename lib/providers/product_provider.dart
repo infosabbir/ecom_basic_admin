@@ -9,4 +9,12 @@ class ProductProvider extends ChangeNotifier {
     final category = CategoryModel(categoryName: name);
     return DbHelper.addCategory(category);
   }
+
+  getAllCategories() {
+    DbHelper.getAllCategories().listen((snapshot) {
+      categoryList = List.generate(snapshot.docs.length,
+          (index) => CategoryModel.fromMap(snapshot.docs[index].data()));
+      notifyListeners();
+    });
+  }
 }

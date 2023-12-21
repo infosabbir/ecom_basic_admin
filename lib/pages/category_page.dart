@@ -33,7 +33,21 @@ class CategoryPage extends StatelessWidget {
         },
         child: const Icon(Icons.add),
       ),
-      body: Center(),
+      body: Consumer<ProductProvider>(
+        builder: (context, provider, child) => ListView.builder(
+          itemCount: provider.categoryList.length,
+          itemBuilder: (context, index) {
+            final category = provider.categoryList[index];
+            return ListTile(
+              title: Text(category.categoryName),
+              trailing: Text(
+                '${category.productCount}',
+                style: const TextStyle(fontSize: 22),
+              ),
+            );
+          },
+        ),
+      ),
     );
   }
 }
