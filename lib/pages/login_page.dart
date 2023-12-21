@@ -113,9 +113,16 @@ class _LoginPageState extends State<LoginPage> {
       final password = _passwordController.text;
 
       try {
-        final user = await AuthService.loginAdmin(email, password);
-        Navigator.pushReplacementNamed(context, LauncherPage.routeName);
+        final isAdmin = await AuthService.loginAdmin(email, password);
         EasyLoading.dismiss();
+        if (isAdmin) {
+          Navigator.pushReplacementNamed(context, LauncherPage.routeName);
+        } else {
+          AuthService.logOut();
+          setState(() {
+            _errMsg = 'This is not an Admin account';
+          });
+        }
       } on FirebaseAuthException catch (error) {
         EasyLoading.dismiss();
         setState(() {

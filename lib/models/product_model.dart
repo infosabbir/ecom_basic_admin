@@ -1,5 +1,3 @@
-
-
 import 'category_model.dart';
 
 const String collectionProduct = 'Products';
@@ -48,37 +46,40 @@ class ProductModel {
       this.featured = false});
 
   Map<String, dynamic> toMap() {
-    return <String,dynamic>{
-      productFieldId : productId,
-      productFieldName : productName,
-      productFieldCategory : category.toMap(),
-      productFieldShortDescription : shortDescription,
-      productFieldLongDescription : longDescription,
-      productFieldDiscount : productDiscount,
-      productFieldSalePrice : salePrice,
-      productFieldStock : stock,
-      productFieldAvgRating : avgRating,
-      productFieldThumbnail : thumbnailImageUrl,
-      productFieldImages : additionalImages,
-      productFieldAvailable : available,
-      productFieldFeatured : featured,
+    return <String, dynamic>{
+      productFieldId: productId,
+      productFieldName: productName,
+      productFieldCategory: category.toMap(),
+      productFieldShortDescription: shortDescription,
+      productFieldLongDescription: longDescription,
+      productFieldDiscount: productDiscount,
+      productFieldSalePrice: salePrice,
+      productFieldStock: stock,
+      productFieldAvgRating: avgRating,
+      productFieldThumbnail: thumbnailImageUrl,
+      productFieldImages: additionalImages,
+      productFieldAvailable: available,
+      productFieldFeatured: featured,
     };
   }
 
-  factory ProductModel.fromMap(Map<String,dynamic> map) => ProductModel(
-    productId: map[productFieldId],
-    productName: map[productFieldName],
-    category: CategoryModel.fromMap(map[productFieldCategory]),
-    shortDescription: map[productFieldShortDescription],
-    longDescription: map[productFieldLongDescription],
-    salePrice: map[productFieldSalePrice],
-    stock: map[productFieldStock],
-    avgRating: map[productFieldAvgRating],
-    productDiscount: map[productFieldDiscount],
-    thumbnailImageUrl: map[productFieldThumbnail],
-    additionalImages: map[productFieldImages] == null ? ['', '', ''] :
-      (map[productFieldImages] as List).map((e) => e as String).toList(),
-    available: map[productFieldAvailable],
-    featured: map[productFieldFeatured],
-  );
+  factory ProductModel.fromMap(Map<String, dynamic> map) => ProductModel(
+        productId: map[productFieldId],
+        productName: map[productFieldName],
+        category: CategoryModel.fromMap(map[productFieldCategory]),
+        shortDescription: map[productFieldShortDescription],
+        longDescription: map[productFieldLongDescription],
+        salePrice: map[productFieldSalePrice],
+        stock: map[productFieldStock],
+        avgRating: map[productFieldAvgRating],
+        productDiscount: map[productFieldDiscount],
+        thumbnailImageUrl: map[productFieldThumbnail],
+        additionalImages: map[productFieldImages] == null
+            ? ['', '', '']
+            : (map[productFieldImages] as List)
+                .map((e) => e as String)
+                .toList(),
+        available: map[productFieldAvailable],
+        featured: map[productFieldFeatured],
+      );
 }
