@@ -1,5 +1,8 @@
+import 'package:ecom_basic_admin/models/category_model.dart';
+import 'package:ecom_basic_admin/providers/product_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class AddProductPage extends StatefulWidget {
   static const String routeName = '/addproduct';
@@ -19,6 +22,7 @@ class _AddProductPageState extends State<AddProductPage> {
   final _discountController = TextEditingController();
   final _quantityController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  CategoryModel? categoryModel;
 
   @override
   void initState() {
@@ -39,12 +43,39 @@ class _AddProductPageState extends State<AddProductPage> {
       ),
       body: Form(
         key: _formKey,
-        child: ListView(),
+        child: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            Consumer<ProductProvider>(
+              builder: (context, provider, child) =>
+                  DropdownButtonFormField<CategoryModel>(
+                items: provider.categoryList
+                    .map(
+                      (category) => DropdownMenuItem<CategoryModel>(
+                        value: category,
+                        child: Text(category.categoryName),
+                      ),
+                    )
+                    .toList(),
+                onChanged: (value) {
+                  categoryModel = value;
+                },
+                hint: const Text('Select Category'),
+                value: categoryModel,
+                isExpanded: true,
+                validator: (value) {
+                  if (value == null) {
+                    return 'Please select a category';
+                  }
+                  return null;
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
-
-
 
   void _selectDate() async {
     final date = await showDatePicker(
@@ -53,15 +84,10 @@ class _AddProductPageState extends State<AddProductPage> {
       firstDate: DateTime(DateTime.now().year - 1),
       lastDate: DateTime.now(),
     );
-    if (date != null) {
-
-    }
+    if (date != null) {}
   }
 
-
-  void _saveProduct() async {
-
-  }
+  void _saveProduct() async {}
 
   @override
   void dispose() {
