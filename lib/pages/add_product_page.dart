@@ -5,6 +5,7 @@ import 'package:ecom_basic_admin/providers/product_provider.dart';
 import 'package:ecom_basic_admin/utils/helper_functions.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
@@ -52,6 +53,7 @@ class _AddProductPageState extends State<AddProductPage> {
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
+            //--------------Image and icon and two text icon button---------------
             Card(
               child: Column(
                 children: [
@@ -88,6 +90,27 @@ class _AddProductPageState extends State<AddProductPage> {
                 ],
               ),
             ),
+            //----------------Date picker--------------------
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TextButton(
+                      onPressed: _selectDate,
+                      child: const Text('Select Purchase Date'),
+                    ),
+                    Text(
+                      dateTime == null
+                          ? 'No Choosen date'
+                          : getFormattedDate(dateTime!),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            //--------------Dropdown Category--------------------
             Consumer<ProductProvider>(
               builder: (context, provider, child) =>
                   DropdownButtonFormField<CategoryModel>(
@@ -113,23 +136,135 @@ class _AddProductPageState extends State<AddProductPage> {
                 },
               ),
             ),
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    TextButton(
-                      onPressed: _selectDate,
-                      child: const Text('Select Purchase Date'),
-                    ),
-                    Text(
-                      dateTime == null
-                          ? 'No Choosen date'
-                          : getFormattedDate(dateTime!),
-                    ),
-                  ],
+            //----------------Product Name Textformfield--------------------
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4.0),
+              child: TextFormField(
+                controller: _nameController,
+                decoration: const InputDecoration(
+                  filled: true,
+                  labelText: 'Enter Product Name',
                 ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'This field must not be empty';
+                  }
+                  return null;
+                },
+              ),
+            ),
+            //---------------ShortDescription Textformfield--------------------
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4.0),
+              child: TextFormField(
+                maxLines: 2,
+                controller: _shortDescriptionController,
+                decoration: const InputDecoration(
+                  filled: true,
+                  labelText: 'Enter Short Description(optional)',
+                ),
+                validator: (value) {
+                  return null;
+                },
+              ),
+            ),
+            //----------------LongDescription Textformfield--------------------
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4.0),
+              child: TextFormField(
+                maxLines: 3,
+                controller: _longDescriptionController,
+                decoration: const InputDecoration(
+                  filled: true,
+                  labelText: 'Enter Long Description(optional)',
+                ),
+                validator: (value) {
+                  return null;
+                },
+              ),
+            ),
+            //----------------PurchasePrice Textformfield--------------------
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4.0),
+              child: TextFormField(
+                keyboardType: TextInputType.number,
+                controller: _purchasePriceController,
+                decoration: const InputDecoration(
+                  filled: true,
+                  labelText: 'Enter Purchase Price',
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'This field must not be empty';
+                  }
+                  if (num.parse(value) <= 0) {
+                    return 'Price should be greater than 0';
+                  }
+                  return null;
+                },
+              ),
+            ),
+            //----------------SalesPrice Textformfield--------------------
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4.0),
+              child: TextFormField(
+                keyboardType: TextInputType.number,
+                controller: _salePriceController,
+                decoration: const InputDecoration(
+                  filled: true,
+                  labelText: 'Enter Sales Price',
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'This field must not be empty';
+                  }
+                  if (num.parse(value) <= 0) {
+                    return 'Price should be greater than 0';
+                  }
+                  return null;
+                },
+              ),
+            ),
+            //----------------Quantity Textformfield--------------------
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4.0),
+              child: TextFormField(
+                keyboardType: TextInputType.number,
+                controller: _quantityController,
+                decoration: const InputDecoration(
+                  filled: true,
+                  labelText: 'Enter Quantity',
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'This field must not be empty';
+                  }
+                  if (num.parse(value) <= 0) {
+                    return 'Quantity should be greater thant 0';
+                  }
+                  return null;
+                },
+              ),
+            ),
+            //----------------Discount Textformfield--------------------
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4.0),
+              child: TextFormField(
+                keyboardType: TextInputType.number,
+                controller: _discountController,
+                decoration: const InputDecoration(
+                  filled: true,
+                  labelText: 'Enter Discount',
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'This field must not be empty';
+                  }
+                  if (num.parse(value) < 0) {
+                    return 'Discount should not be a negative value';
+                  }
+                  return null;
+                },
               ),
             ),
           ],
@@ -162,7 +297,25 @@ class _AddProductPageState extends State<AddProductPage> {
     }
   }
 
-  void _saveProduct() async {}
+  void _saveProduct() async {
+    if (imageLocalPath == null) {
+      showMsg(context, 'Please select a product image');
+      return;
+    }
+    if (dateTime == null) {
+      showMsg(context, 'Please select a puchase date');
+      return;
+    }
+    if (_formKey.currentState!.validate()) {
+      EasyLoading.show(status: 'Please Wait..');
+      String? downloadUrl;
+
+      try {
+        downloadUrl = await Provider.of<ProductProvider>(context, listen: false)
+            .uploadImage(imageLocalPath!);
+      } catch (error) {}
+    }
+  }
 
   @override
   void dispose() {
