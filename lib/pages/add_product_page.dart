@@ -1,7 +1,11 @@
+import 'dart:io';
+
 import 'package:ecom_basic_admin/models/category_model.dart';
 import 'package:ecom_basic_admin/providers/product_provider.dart';
+import 'package:ecom_basic_admin/utils/helper_functions.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 class AddProductPage extends StatefulWidget {
@@ -23,6 +27,8 @@ class _AddProductPageState extends State<AddProductPage> {
   final _quantityController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   CategoryModel? categoryModel;
+  String? imageLocalPath;
+  DateTime? dateTime;
 
   @override
   void initState() {
@@ -46,6 +52,42 @@ class _AddProductPageState extends State<AddProductPage> {
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
+            Card(
+              child: Column(
+                children: [
+                  imageLocalPath == null
+                      ? const Icon(
+                          Icons.photo,
+                          size: 100,
+                        )
+                      : Image.file(
+                          File(imageLocalPath!),
+                          width: 100,
+                          height: 100,
+                          fit: BoxFit.cover,
+                        ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      TextButton.icon(
+                        onPressed: () {
+                          getImage(ImageSource.camera);
+                        },
+                        icon: const Icon(Icons.camera),
+                        label: const Text('Capture'),
+                      ),
+                      TextButton.icon(
+                        onPressed: () {
+                          getImage(ImageSource.gallery);
+                        },
+                        icon: const Icon(Icons.photo_album),
+                        label: const Text('Gallery'),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
             Consumer<ProductProvider>(
               builder: (context, provider, child) =>
                   DropdownButtonFormField<CategoryModel>(
@@ -71,10 +113,39 @@ class _AddProductPageState extends State<AddProductPage> {
                 },
               ),
             ),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TextButton(
+                      onPressed: _selectDate,
+                      child: const Text('Select Purchase Date'),
+                    ),
+                    Text(
+                      dateTime == null
+                          ? 'No Choosen date'
+                          : getFormattedDate(dateTime!),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
       ),
     );
+  }
+
+  void getImage(ImageSource source) async {
+    final file = await ImagePicker().pickImage(
+      source: source,
+      imageQuality: 50,
+    );
+    if (file != null) {
+      imageLocalPath = file.path;
+    }
   }
 
   void _selectDate() async {
@@ -84,7 +155,11 @@ class _AddProductPageState extends State<AddProductPage> {
       firstDate: DateTime(DateTime.now().year - 1),
       lastDate: DateTime.now(),
     );
-    if (date != null) {}
+    if (date != null) {
+      setState(() {
+        dateTime = date;
+      });
+    }
   }
 
   void _saveProduct() async {}
