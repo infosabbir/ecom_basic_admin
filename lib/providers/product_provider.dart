@@ -21,7 +21,7 @@ class ProductProvider extends ChangeNotifier {
     });
   }
 
-  Future<String> uploadImage(String imageLocalPath) async {
+  Future<String>  uploadImage(String imageLocalPath) async {
     final photoRef = FirebaseStorage.instance.ref().child(
           'ProductImages/${DateTime.now().microsecondsSinceEpoch}',
         );
