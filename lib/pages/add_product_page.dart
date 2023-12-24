@@ -1,6 +1,11 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ecom_basic_admin/models/category_model.dart';
+import 'package:ecom_basic_admin/models/date_model.dart';
+import 'package:ecom_basic_admin/models/image_model.dart';
+import 'package:ecom_basic_admin/models/product_model.dart';
+import 'package:ecom_basic_admin/models/purchase_model.dart';
 import 'package:ecom_basic_admin/providers/product_provider.dart';
 import 'package:ecom_basic_admin/utils/helper_functions.dart';
 import 'package:flutter/foundation.dart';
@@ -308,12 +313,44 @@ class _AddProductPageState extends State<AddProductPage> {
     }
     if (_formKey.currentState!.validate()) {
       EasyLoading.show(status: 'Please Wait..');
-      String? downloadUrl;
 
       try {
-        downloadUrl = await Provider.of<ProductProvider>(context, listen: false)
-            .uploadImage(imageLocalPath!);
-      } catch (error) {}
+        final imageModel =
+            await Provider.of<ProductProvider>(context, listen: false)
+                .uploadImage(imageLocalPath!);
+        final product = ProductModel(
+          productName: _nameController.text,
+          shortDescription: _shortDescriptionController.text,
+          longDescription: _longDescriptionController.text,
+          category: categoryModel!,
+          salePrice: num.parse(_salePriceController.text),
+          stock: num.parse(_quantityController.text),
+          thumbnailImage: imageModel,
+          additionalImages: <ImageModel>[],
+        );
+
+        final purchase = PurchaseModel(
+          productModel: product,
+          purchasePrice: num.parse(_purchasePriceController.text),
+          purchaseQuantity: num.parse(_quantityController.text),
+          dateModel: DateModel(
+            timestamp: Timestamp.fromDate(dateTime!),
+            day: dateTime!.day,
+            month: dateTime!.month,
+            year: dateTime!.year,
+          ),
+        );
+        Provider.of<ProductProvider>(context, listen: false)
+            .addProduct(product, purchase)
+            .then((value) {
+          showMsg(context, 'Saved');
+          EasyLoading.dismiss();
+          _resetFields();
+        });
+      } catch (error) {
+        EasyLoading.dismiss();
+        showMsg(context, 'could not save');
+      }
     }
   }
 
@@ -338,6 +375,9 @@ class _AddProductPageState extends State<AddProductPage> {
       _quantityController.clear();
       _discountController.clear();
       _salePriceController.clear();
+      dateTime = null;
+      categoryModel = null;
+      imageLocalPath = null;
     });
   }
 }

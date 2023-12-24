@@ -1,4 +1,5 @@
 const String currencySymbol = '৳';
+const String imageDirectory = 'ProductPictures/';
 
 const serverKey = '';
 const cities = [
@@ -33,4 +34,3 @@ abstract class NotificationType {
   static const String order = 'New Order';
   static const String user = 'New User';
 }
-

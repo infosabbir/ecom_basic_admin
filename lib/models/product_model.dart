@@ -1,3 +1,7 @@
+import 'dart:js_interop';
+
+import 'package:ecom_basic_admin/models/image_model.dart';
+
 import 'category_model.dart';
 
 const String collectionProduct = 'Products';
@@ -19,14 +23,14 @@ class ProductModel {
   String? productId;
   String productName;
   CategoryModel category;
-  String? shortDescription;
-  String? longDescription;
+  String shortDescription;
+  String longDescription;
   num salePrice;
   num stock;
   num avgRating;
   num productDiscount;
-  String thumbnailImageUrl;
-  List<String> additionalImages;
+  ImageModel thumbnailImage;
+  List<ImageModel> additionalImages;
   bool available;
   bool featured;
 
@@ -34,13 +38,13 @@ class ProductModel {
       {this.productId,
       required this.productName,
       required this.category,
-      this.shortDescription,
-      this.longDescription,
+      this.shortDescription = '',
+      this.longDescription = '',
       required this.salePrice,
       required this.stock,
       this.productDiscount = 0,
       this.avgRating = 0.0,
-      required this.thumbnailImageUrl,
+      required this.thumbnailImage,
       required this.additionalImages,
       this.available = true,
       this.featured = false});
@@ -56,8 +60,9 @@ class ProductModel {
       productFieldSalePrice: salePrice,
       productFieldStock: stock,
       productFieldAvgRating: avgRating,
-      productFieldThumbnail: thumbnailImageUrl,
-      productFieldImages: additionalImages,
+      productFieldThumbnail: thumbnailImage.toJson(),
+      productFieldImages:
+          additionalImages.map((imageModel) => imageModel.toJson()).toList(),
       productFieldAvailable: available,
       productFieldFeatured: featured,
     };
@@ -73,12 +78,10 @@ class ProductModel {
         stock: map[productFieldStock],
         avgRating: map[productFieldAvgRating],
         productDiscount: map[productFieldDiscount],
-        thumbnailImageUrl: map[productFieldThumbnail],
-        additionalImages: map[productFieldImages] == null
-            ? ['', '', '']
-            : (map[productFieldImages] as List)
-                .map((e) => e as String)
-                .toList(),
+        thumbnailImage: map[productFieldThumbnail],
+        additionalImages: (map[productFieldImages] as List)
+            .map((e) => ImageModel.fromJson(e))
+            .toList(),
         available: map[productFieldAvailable],
         featured: map[productFieldFeatured],
       );
